@@ -87,6 +87,10 @@ class PowerPoint2007 implements ReaderInterface
      * @var string
      */
     protected $fileRels;
+    /**
+     * @var bool
+     */
+    protected $loadGDImages = true;
 
     /**
      * Can the current \PhpOffice\PhpPresentation\Reader\ReaderInterface read the file?
@@ -134,6 +138,16 @@ class PowerPoint2007 implements ReaderInterface
         }
 
         return $this->loadFile($pFilename);
+    }
+
+    /**
+     * @param bool $loadGDImages
+     * @return PowerPoint2007
+     */
+    public function setLoadGDImages(bool $loadGDImages = true): PowerPoint2007
+    {
+        $this->loadGDImages = $loadGDImages;
+        return $this;
     }
 
     /**
@@ -800,7 +814,7 @@ class PowerPoint2007 implements ReaderInterface
                 $pathImage = implode('/', $pathImage);
                 $imageFile = $this->oZip->getFromName($pathImage);
                 if (!empty($imageFile)) {
-                    if ($oShape instanceof Gd) {
+                    if ($this->loadGdImages && $oShape instanceof Gd) {
                         $info = getimagesizefromstring($imageFile);
                         $oShape->setMimeType($info['mime']);
                         $oShape->setRenderingFunction(str_replace('/', '', $info['mime']));
